@@ -114,6 +114,30 @@
         </li>
     @endif
 
+    @if (getUserType($user) == 'staff')
+        <li class="nav-item">
+            @php
+                $noCollapsed = (
+                    strpos(\Request::route()->getName(), 'sale_returns') === 0 or
+                    strpos(\Request::route()->getName(), 'promotions') === 0
+                );
+            @endphp
+            <a class="nav-link {{ $noCollapsed ? '' : 'collapsed' }}" href="#" data-toggle="collapse" data-target="#collapseTwo"
+                aria-expanded="true" aria-controls="collapseTwo">
+                <i class="fas fa-fw fa-truck"></i>
+                <span>Returns and Promotions</span>
+            </a>
+
+            <div id="collapseTwo" class="collapse {{ $noCollapsed ? 'show' : '' }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Sale Returns:</h6>
+                    <a class="collapse-item {{ strpos(\Request::route()->getName(), 'sale_returns') === 0? 'active' : '' }}" href="{{ route('sale_returns.index') }}">Sale Returns</a>
+                    <a class="collapse-item {{ strpos(\Request::route()->getName(), 'promotions') === 0? 'active' : '' }}" href="{{ route('promotions.index') }}">Promotions</a>
+                </div>
+            </div>
+        </li>
+    @endif
+
     @if (getUserType($user) == 'customer')
         <li class="nav-item">
             @php

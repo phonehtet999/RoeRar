@@ -66,4 +66,14 @@ class Product extends Model
     {
         return $this->hasMany(Purchase::class, 'product_id', 'id');
     }
+
+    public function saleReturns()
+    {
+        return $this->hasMany(SaleReturn::class, 'product_id', 'id');
+    }
+
+    public function promotions()
+    {
+        return $this->hasMany(Promotion::class, 'product_id', 'id');
+    }
 }

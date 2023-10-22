@@ -20,6 +20,9 @@ class SaleDetail extends Model
         'quantity',
         'unit_price',
         'total_amount',
+        'promotion_id',
+        'total_promoted_qty',
+        'total_promoted_amount',
     ];
 
     public function sale()
@@ -30,5 +33,15 @@ class SaleDetail extends Model
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
+
+    public function saleReturns()
+    {
+        return $this->hasMany(SaleReturn::class, 'sale_detail_id', 'id');
+    }
+
+    public function promotion()
+    {
+        return $this->belongsTo(Promotion::class, 'promotion_id', 'id');
     }
 }

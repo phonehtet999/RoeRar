@@ -27,6 +27,10 @@
                                 <td>{{ $sale->code }}</td>
                             </tr>
                             <tr>
+                                <th>Total Promoted Amount</th>
+                                <td>{{ number_format($sale->saleDetails()->sum('total_promoted_amount')) }} MMK</td>
+                            </tr>
+                            <tr>
                                 <th>Total Amount</th>
                                 <td>{{ number_format($sale->total_amount) }} MMK</td>
                             </tr>
@@ -166,13 +170,27 @@
                                         </h6>
                                     </div>
                                     <div class="col-md-2 text-center">
-                                        <h6 class="text-primary">{{ $value->quantity }}</h6>
+                                        @if ($value->total_amount <= 0)
+                                            <h6 class="mb-0 text-warning">Returned</h6>
+                                        @else
+                                            <h6 class="text-primary">{{ $value->quantity }}</h6>
+                                        @endif
                                     </div>
                                     <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                                        <h6 class="mb-0">{{ number_format($value->total_amount) }}</h6>
-                                        MMK
+                                        @if ($value->total_amount <= 0)
+                                                <h6 class="mb-0 text-warning">Returned</h6>
+                                        @else
+                                            <h6 class="mb-0">{{ number_format($value->total_amount) }}</h6>
+                                            MMK
+                                        @endif
                                     </div>
                                 </div>
+
+                                @if (!empty($value->total_promoted_amount))
+                                    <div class="mb-0 text-success text-right">
+                                        Promoted {{ $value->total_promoted_amount }} MMK
+                                    </div>
+                                @endif
                                 <hr class="my-4">
                             </div>
                             @endforeach

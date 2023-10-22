@@ -20,14 +20,20 @@
                 @foreach ($products as $value)
                     @php
                         $inStock = (($value->status == 'in_stock') and ($value->quantity > 0));
+                        $promotion = $value->promotions()->where('status', 1)->where('remaining_quantity', '>', 0)->first();
                     @endphp
                     <div class="col mb-5">
                         <div class="card h-100">
-                            @if (!empty($inStock))
-                                <div class="badge bg-primary text-white position-absolute" style="top: 0.5rem; right: 0.5rem">In Stock</div>
-                            @else
-                                <div class="badge bg-secondary text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Out Of Stock</div>
-                            @endif
+                            <div class="row position-absolute" style="top: 0.5rem; right: 0.5rem">
+                                @if (!empty($promotion))
+                                    <div class="badge bg-success text-white mr-2">Promotion</div>
+                                @endif
+                                @if (!empty($inStock))
+                                    <div class="badge bg-primary text-white mr-2">In Stock</div>
+                                @else
+                                    <div class="badge bg-secondary text-white mr-2">Out Of Stock</div>
+                                @endif
+                            </div>
                             <!-- Product image-->
                             @php
                                 $path = (!empty($value->image) and file_exists(public_path('images/products/' . $value->image))) ? asset('images/products/' . $value->image) : null;
@@ -60,7 +66,12 @@
                                     <!-- Product name -->
                                     <h5 class="fw-bolder">{{ $value->name }}</h5>
                                     <!-- Product price -->
-                                    <p class="text-info">{{ $value->unit_selling_price}} MMK</p>
+                                    @if (!empty($promotion))
+                                    <p class="text-warning"><del>{{ $value->unit_selling_price}} MMK</del></p>
+                                    <p class="text-info">{{ $value->unit_selling_price - $promotion->amount_per_unit }} MMK</p>
+                                    @else
+                                    <p class="text-info">{{ $value->unit_selling_price }} MMK</p>
+                                    @endif
                                     <!-- Product Qty -->
                                     <p id="stock-qty-{{ $value->id }}">In Stock: {{ $value->quantity }}</p>
 

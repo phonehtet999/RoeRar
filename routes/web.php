@@ -9,8 +9,10 @@ use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\LoginRegisterController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\SaleReturnController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
@@ -61,4 +63,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('sales', SaleController::class);
     Route::resource('deliveries', DeliveryController::class);
     Route::resource('payments', PaymentController::class);
+    Route::post('sale_returns/create-second', [SaleReturnController::class , 'createSecond'])->name('sale_returns.create-second');
+    Route::resource('sale_returns', SaleReturnController::class);
+    Route::resource('promotions', PromotionController::class);
 });

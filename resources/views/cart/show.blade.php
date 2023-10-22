@@ -17,6 +17,9 @@
             <div class="card col-lg-10 mx-auto my-2">
                 <div class="card-body">
                     <form action="{{ route('sales.store') }}" method="POST">
+                        @php
+                            $totalPromotedAmount = 0;
+                        @endphp
                         @csrf
                         <div class="row">
                             <div class="col-lg-8">
@@ -28,6 +31,18 @@
                                             <!-- Thumbnail -->
                                                 @php
                                                     $path = (!empty($value->product->image) and file_exists(public_path('images/products/' . $value->product->image))) ? asset('images/products/' . $value->product->image) : null;
+
+                                                    $promotion = $value->product->promotions()->where('status', 1)->where('remaining_quantity', '>', 0)->first();
+                                                    $promotedAmount = 0;
+                                                    $promotionQty = 0;
+                                                    $promotionItemCount[$value->product->id] = $promotionItemCount[$value->product->id] ?? 0;
+                                                    if (!empty($promotion) and ($promotionItemCount[$value->product->id] < $promotion->remaining_quantity)) {
+                                                        $promotionQty = min($value->quantity, $promotion->remaining_quantity);
+                                                        $promotedAmount = $promotionQty * $promotion->amount_per_unit;
+                                                    }
+
+                                                    $totalPromotedAmount += $promotedAmount;
+                                                    $promotionItemCount[$value->product->id] = (isset($promotionItemCount[$value->product->id]) ? $promotionItemCount[$value->product->id] : 0) + $promotionQty;
                                                 @endphp
                                                 @if (!empty($path))
                                                     <a target="_blank" href="{{ $path }}">
@@ -53,13 +68,21 @@
                                                 <h6 class="text-primary">{{ $value->quantity }}</h6>
                                             </div>
                                             <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                                                <h6 class="mb-0">{{ number_format($value->product->unit_selling_price * $value->quantity) }}</h6>
+                                                @if (!empty($promotedAmount))
+                                                <h6 class="mb-0"><del>{{ number_format(($value->product->unit_selling_price * $value->quantity)) }}</del></h6>
+                                                @endif
+                                                <h6 class="mb-0">{{ number_format(($value->product->unit_selling_price * $value->quantity) - $promotedAmount) }}</h6>
                                                 MMK
                                             </div>
                                             <div class="col-md-1 col-lg-1 col-xl-1 text-end">
                                                 <button class="btn remove-btn" data-remove="{{ $value->id }}"><i class="fas fa-times"></i></button>
                                             </div>
                                         </div>
+                                        @if (!empty($promotedAmount))
+                                        <div class="mb-0 text-success text-right">
+                                            Promoted {{ $promotedAmount }} MMK
+                                        </div>
+                                        @endif
                                         <hr class="my-4">
                                     </div>
                                     @endforeach
@@ -123,9 +146,14 @@
 
                                     <hr>
 
+                                    <label class="text-right">Total Promoted</label>
+                                    <h6 id="total-amount">{{ $totalPromotedAmount }} MMK</h6>
+
+                                    <hr>
+
                                     <div class="float-right mb-2">
                                         <label class="text-right">Total price</label>
-                                        <h5 id="total-amount">{{ $cart->total_amount }} MMK</h5>
+                                        <h5 id="total-amount">{{ $cart->total_amount - $totalPromotedAmount }} MMK</h5>
                                     </div>
 
                                     <button type="submit" class="btn btn-success btn-block btn-lg"

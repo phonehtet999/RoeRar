@@ -70,14 +70,36 @@ class SaleController extends Controller
         $totalAmount = 0;
         foreach ($productsToOrder as $key => $product) {
             $prd = Product::find($product['product_id']);
-            $totalPrice = $prd->unit_selling_price * $product['quantity'];
+
+            $promotion = $prd->promotions()->where('status', 1)->where('remaining_quantity', '>', 0)->first();
+            $promotedAmount = 0;
+            $promotedQty = 0;
+            if (!empty($promotion)) {
+                $promotedQty = min($product['quantity'], $promotion->remaining_quantity);
+                $promotedAmount = $promotedQty * $promotion->amount_per_unit;
+
+                $promotion->remaining_quantity -= $promotedQty;
+            }
+
+            Log::info('qty-' . $promotedQty);
+            Log::info($promotedAmount);
+            Log::info($promotion->remaining_quantity ?? 0);
+
+            $totalPrice = ($prd->unit_selling_price * $product['quantity']) - $promotedAmount;
             $productsToOrder[$key]['total_price'] = $totalPrice;
+            $productsToOrder[$key]['total_promoted_amount'] = $promotedAmount;
+            $productsToOrder[$key]['total_promoted_qty'] = $promotedQty;
             $productsToOrder[$key]['unit_price'] = $prd->unit_selling_price;
+            $productsToOrder[$key]['promotion_id'] = $promotion->id ?? null;
             $totalAmount += $totalPrice;
         }
 
         DB::beginTransaction();
         try {
+
+            if (!empty($promotion)) {
+                $promotion->save();
+            }
 
             $sale = Sale::create([
                 'customer_id' => $customer->id,
@@ -92,7 +114,10 @@ class SaleController extends Controller
                     'product_id' => $product['product_id'],
                     'quantity' => $product['quantity'],
                     'total_amount' => $product['total_price'],
+                    'total_promoted_amount' => $product['total_promoted_amount'],
+                    'total_promoted_qty' => $product['total_promoted_qty'],
                     'unit_price' => $product['unit_price'],
+                    'promotion_id' => $product['promotion_id'],
                 ];
             }, $productsToOrder));
 
