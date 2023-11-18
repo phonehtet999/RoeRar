@@ -20,6 +20,8 @@ class Promotion extends Model
         'remaining_quantity',
         'amount_per_unit',
         'status',
+        'date_from',
+        'date_to',
     ];
 
     public function product()

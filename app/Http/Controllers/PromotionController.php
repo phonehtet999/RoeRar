@@ -45,6 +45,8 @@ class PromotionController extends Controller
             'amount_per_unit' => 'required|integer',
             'total_quantity' => 'required|integer',
             'status' => 'boolean',
+            'date_from' => 'nullable|string',
+            'date_to' => 'nullable|string',
         ]);
         
         try {
@@ -94,10 +96,12 @@ class PromotionController extends Controller
     public function update(Request $request, Promotion $promotion)
     {
         $data = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'amount_per_unit' => 'required|integer',
-            'total_quantity' => 'required|integer',
+            // 'product_id' => 'required|exists:products,id',
+            // 'amount_per_unit' => 'required|integer',
+            // 'total_quantity' => 'required|integer',
             'status' => 'boolean',
+            'date_from' => 'nullable|string',
+            'date_to' => 'nullable|string',
         ]);
 
         try {

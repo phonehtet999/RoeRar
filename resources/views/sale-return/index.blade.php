@@ -25,6 +25,7 @@
                             <th>Code</th>
                             <th>Sale Code</th>
                             <th>Product Code</th>
+                            <th>Exchanged Product Code</th>
                             <th>Returned Quantity</th>
                             <th>Total Returned Amount</th>
                             <th>Description</th>
@@ -42,6 +43,7 @@
                                     </a>
                                 </td>
                                 <td>{{ $value->product->code }}</td>
+                                <td>{{ $value->exchangedProduct->code ?? '' }}</td>
                                 <td>{{ $value->returned_quantity }}</td>
                                 <td class="text-right">{{ number_format($value->total_returned_amount) }} MMK</td>
                                 <td>{{ $value->description }}</td>

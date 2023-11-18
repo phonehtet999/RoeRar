@@ -72,13 +72,13 @@
                     strpos(\Request::route()->getName(), 'purchases') === 0
                 );
             @endphp
-            <a class="nav-link {{ $noCollapsed ? '' : 'collapsed' }}" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                aria-expanded="true" aria-controls="collapseTwo">
+            <a class="nav-link {{ $noCollapsed ? '' : 'collapsed' }}" href="#" data-toggle="collapse" data-target="#collapseThree"
+                aria-expanded="true" aria-controls="collapseThree">
                 <i class="fas fa-fw fa-industry"></i>
                 <span>Inventory</span>
             </a>
 
-            <div id="collapseTwo" class="collapse {{ $noCollapsed ? 'show' : '' }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div id="collapseThree" class="collapse {{ $noCollapsed ? 'show' : '' }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">Staff Inventory:</h6>
                     <a class="collapse-item {{ strpos(\Request::route()->getName(), 'products') === 0? 'active' : '' }}" href="{{ route('products.index') }}">Products</a>
@@ -97,13 +97,13 @@
                     strpos(\Request::route()->getName(), 'payments') === 0
                 );
             @endphp
-            <a class="nav-link {{ $noCollapsed ? '' : 'collapsed' }}" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                aria-expanded="true" aria-controls="collapseTwo">
+            <a class="nav-link {{ $noCollapsed ? '' : 'collapsed' }}" href="#" data-toggle="collapse" data-target="#collapseFour"
+                aria-expanded="true" aria-controls="collapseFour">
                 <i class="fas fa-fw fa-truck"></i>
                 <span>Sales and Deliveries</span>
             </a>
 
-            <div id="collapseTwo" class="collapse {{ $noCollapsed ? 'show' : '' }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div id="collapseFour" class="collapse {{ $noCollapsed ? 'show' : '' }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">Customer Sales:</h6>
                     <a class="collapse-item {{ strpos(\Request::route()->getName(), 'sales') === 0? 'active' : '' }}" href="{{ route('sales.index') }}">Sales</a>
@@ -122,13 +122,13 @@
                     strpos(\Request::route()->getName(), 'promotions') === 0
                 );
             @endphp
-            <a class="nav-link {{ $noCollapsed ? '' : 'collapsed' }}" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                aria-expanded="true" aria-controls="collapseTwo">
+            <a class="nav-link {{ $noCollapsed ? '' : 'collapsed' }}" href="#" data-toggle="collapse" data-target="#collapseFive"
+                aria-expanded="true" aria-controls="collapseFive">
                 <i class="fas fa-fw fa-truck"></i>
                 <span>Returns and Promotions</span>
             </a>
 
-            <div id="collapseTwo" class="collapse {{ $noCollapsed ? 'show' : '' }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div id="collapseFive" class="collapse {{ $noCollapsed ? 'show' : '' }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">Sale Returns:</h6>
                     <a class="collapse-item {{ strpos(\Request::route()->getName(), 'sale_returns') === 0? 'active' : '' }}" href="{{ route('sale_returns.index') }}">Sale Returns</a>
@@ -146,13 +146,13 @@
                     strpos(\Request::route()->getName(), 'profile') === 0
                 );
             @endphp
-            <a class="nav-link {{ $noCollapsed ? '' : 'collapsed' }}" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                aria-expanded="true" aria-controls="collapseTwo">
+            <a class="nav-link {{ $noCollapsed ? '' : 'collapsed' }}" href="#" data-toggle="collapse" data-target="#collapseSix"
+                aria-expanded="true" aria-controls="collapseSix">
                 <i class="fas fa-fw fa-cog"></i>
                 <span>Orders and Account</span>
             </a>
 
-            <div id="collapseTwo" class="collapse {{ $noCollapsed ? 'show' : '' }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div id="collapseSix" class="collapse {{ $noCollapsed ? 'show' : '' }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item {{ strpos(\Request::route()->getName(), 'sales') === 0? 'active' : '' }}" href="{{ route('sales.index') }}">Orders</a>
                     <a class="collapse-item {{ strpos(\Request::route()->getName(), 'profile') === 0? 'active' : '' }}" href="{{ route('profile') }}">Your Profile</a>

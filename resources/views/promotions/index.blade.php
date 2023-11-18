@@ -26,6 +26,8 @@
                             <th>Amount Per Unit</th>
                             <th>Total Quantity</th>
                             <th>Remaining Quantity</th>
+                            <th>Date From</th>
+                            <th>Date To</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -33,17 +35,21 @@
                         @foreach ($promotions as $key => $value)    
                             <tr>
                                 <td>{{ $promotions->firstItem() + $key }}</td>
-                                <td>{{ $value->product->code }}</td>
+                                <td>{{ $value->product->code }} ({{ $value->product->name }})</td>
                                 <td>{{ number_format($value->amount_per_unit) }}</td>
                                 <td>{{ $value->total_quantity }}</td>
                                 <td>{{ $value->remaining_quantity }}</td>
+                                <td>{{ !empty($value->date_from) ? date('d/M/Y', strtotime($value->date_from)) : '' }}</td>
+                                <td>{{ !empty($value->date_to) ? date('d/M/Y', strtotime($value->date_to)) : '' }}</td>
                                 <td>
+                                    
+                                    <!-- Edit -->
+                                    <a class='btn btn-primary white_font btn-sm' href="{{ route('promotions.edit', $value->id) }}" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                        <strong>Edit</strong>
+                                    </a>
+
                                     @if (empty($value->saleDetails()->count()))
-                                        <!-- Edit -->
-                                        <a class='btn btn-primary white_font btn-sm' href="{{ route('promotions.edit', $value->id) }}" title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                            <strong>Edit</strong>
-                                        </a>
                                         <!-- Delete -->
                                         <button type="submit" id="deletebtn" class="btn btn-danger btn-sm" delete_id="{{$value->id}}" title="Delete">
                                             <i class="fas fa-trash"></i>

@@ -22,6 +22,7 @@ class SaleReturn extends Model
         'returned_quantity',
         'total_returned_amount',
         'description',
+        'exchange_prd_id',
     ];
 
     public static function boot()
@@ -45,5 +46,10 @@ class SaleReturn extends Model
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
+
+    public function exchangedProduct()
+    {
+        return $this->belongsTo(Product::class, 'exchange_prd_id', 'id');
     }
 }

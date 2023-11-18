@@ -72,6 +72,38 @@
                                 @endif
                             </div>
                         </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-12 mb-3 mb-sm-0">
+                                <label for="date_from">Date From</label>
+                                <input
+                                    name="date_from"
+                                    type="date"
+                                    class="form-control datetimepicker"
+                                    placeholder="DD-MM-YY"
+                                >
+
+                                @if ($errors->has('date_from'))
+                                    <span class="text-danger small">{{ $errors->first('date_from') }}</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-12 mb-3 mb-sm-0">
+                                <label for="date_to">Date To</label>
+                                <input
+                                    name="date_to"
+                                    type="date"
+                                    class="form-control datetimepicker"
+                                    placeholder="DD-MM-YY"
+                                >
+
+                                @if ($errors->has('date_to'))
+                                    <span class="text-danger small">{{ $errors->first('date_to') }}</span>
+                                @endif
+                            </div>
+                        </div>
                         
                         <button type="submit" class="btn btn-primary btn-user btn-block">
                             Create

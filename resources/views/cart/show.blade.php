@@ -30,9 +30,22 @@
                                             <div class="col-md-2 col-lg-2 col-xl-2">
                                             <!-- Thumbnail -->
                                                 @php
+                                                    $today = date('Y-m-d');
                                                     $path = (!empty($value->product->image) and file_exists(public_path('images/products/' . $value->product->image))) ? asset('images/products/' . $value->product->image) : null;
 
-                                                    $promotion = $value->product->promotions()->where('status', 1)->where('remaining_quantity', '>', 0)->first();
+                                                    $promotion = $value->product->promotions()
+                                                                    ->where('status', 1)
+                                                                    ->where('remaining_quantity', '>', 0)
+                                                                    ->where(function ($query) use ($today) {
+                                                                        return $query->where('date_from', null)
+                                                                            ->orWhere('date_from', '<=', $today);
+                                                                    })
+                                                                    ->where(function ($query) use ($today) {
+                                                                        return $query->where('date_to', null)
+                                                                            ->orwhere('date_to', '>=', $today);
+                                                                    })
+                                                                    ->first();
+                                                    
                                                     $promotedAmount = 0;
                                                     $promotionQty = 0;
                                                     $promotionItemCount[$value->product->id] = $promotionItemCount[$value->product->id] ?? 0;
@@ -218,3 +231,5 @@
         });
     </script>
 @endpush
+
+@include('notification')

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BankAcount;
 use App\Models\Cart;
 use App\Models\Payment;
 use App\Models\Product;
@@ -58,6 +59,14 @@ class SaleController extends Controller
             'account_number' => 'required|string',
         ]);
 
+        $bankAccount = BankAcount::where('account_name', $data['account_name'])
+                                ->where('account_number', $data['account_number'])
+                                ->first();
+
+        if (empty($bankAccount)) {
+            return redirect()->back()->with('error', 'Account not found');
+        }
+
         $customer = auth()->user()->customer;
         $productsToOrder = ProductCart::where('cart_id', $data['cart_id'])
                                 ->whereIn('id', $data['product_cart_ids'])
@@ -67,11 +76,24 @@ class SaleController extends Controller
 
         $cart = Cart::find($data['cart_id']);
 
+        $today = date('Y-m-d');
+
         $totalAmount = 0;
         foreach ($productsToOrder as $key => $product) {
             $prd = Product::find($product['product_id']);
 
-            $promotion = $prd->promotions()->where('status', 1)->where('remaining_quantity', '>', 0)->first();
+            $promotion = $prd->promotions()->where('status', 1)
+                            ->where('remaining_quantity', '>', 0)
+                            ->where(function ($query) use ($today) {
+                                return $query->where('date_from', null)
+                                    ->orWhere('date_from', '<=', $today);
+                            })
+                            ->where(function ($query) use ($today) {
+                                return $query->where('date_to', null)
+                                    ->orwhere('date_to', '>=', $today);
+                            })
+                            ->first();
+
             $promotedAmount = 0;
             $promotedQty = 0;
             if (!empty($promotion)) {
@@ -80,10 +102,6 @@ class SaleController extends Controller
 
                 $promotion->remaining_quantity -= $promotedQty;
             }
-
-            Log::info('qty-' . $promotedQty);
-            Log::info($promotedAmount);
-            Log::info($promotion->remaining_quantity ?? 0);
 
             $totalPrice = ($prd->unit_selling_price * $product['quantity']) - $promotedAmount;
             $productsToOrder[$key]['total_price'] = $totalPrice;

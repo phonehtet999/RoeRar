@@ -26,7 +26,7 @@
                         @method('PUT')
                         <div class="form-group row">
                             <div class="col-sm-12 mb-3 mb-sm-0">
-                                <select name="product_id" class="form-control select2" id="product-id" required>
+                                <select name="product_id" class="form-control select2" id="product-id" disabled>
                                     <option>Select Product</option>
                                     @php
                                         $oldProductId = old('product_id') ?? ($promotion->product_id ?? '');
@@ -45,7 +45,7 @@
                         <div class="form-group row">
                             <div class="col-sm-12 mb-3 mb-sm-0">
                                 <input type="number" class="form-control text-dark" id="amount" name="amount_per_unit" value="{{ old('name') ?? ($promotion->amount_per_unit ?? '') }}"
-                                    required min="0" placeholder="Amount Per Unit">
+                                    required min="0" placeholder="Amount Per Unit" disabled>
     
                                 @if ($errors->has('amount_per_unit'))
                                     <span class="text-danger small">{{ $errors->first('amount_per_unit') }}</span>
@@ -56,7 +56,7 @@
                         <div class="form-group row">
                             <div class="col-sm-12 mb-3 mb-sm-0">
                                 <input type="number" class="form-control text-dark" id="total_quantity" name="total_quantity" value="{{ old('name') ?? ($promotion->total_quantity ?? '') }}"
-                                    required min="0" placeholder="Total Quantity">
+                                    required min="0" placeholder="Total Quantity" disabled>
     
                                 @if ($errors->has('total_quantity'))
                                     <span class="text-danger small">{{ $errors->first('total_quantity') }}</span>
@@ -76,6 +76,40 @@
 
                                 @if ($errors->has('status'))
                                     <span class="text-danger small">{{ $errors->first('status') }}</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-12 mb-3 mb-sm-0">
+                                <label for="date_from">Date From</label>
+                                <input
+                                    name="date_from"
+                                    type="date"
+                                    class="form-control datetimepicker"
+                                    placeholder="DD-MM-YY"
+                                    value="{{ old('date_from') ?? ($promotion->date_from ?? '') }}"
+                                >
+
+                                @if ($errors->has('date_from'))
+                                    <span class="text-danger small">{{ $errors->first('date_from') }}</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-12 mb-3 mb-sm-0">
+                                <label for="date_to">Date To</label>
+                                <input
+                                    name="date_to"
+                                    type="date"
+                                    class="form-control datetimepicker"
+                                    placeholder="DD-MM-YY"
+                                    value="{{ old('date_to') ?? ($promotion->date_to ?? '') }}"
+                                >
+
+                                @if ($errors->has('date_to'))
+                                    <span class="text-danger small">{{ $errors->first('date_to') }}</span>
                                 @endif
                             </div>
                         </div>

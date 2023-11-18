@@ -19,8 +19,19 @@
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
                 @foreach ($products as $value)
                     @php
+                        $today = date('Y-m-d');
                         $inStock = (($value->status == 'in_stock') and ($value->quantity > 0));
-                        $promotion = $value->promotions()->where('status', 1)->where('remaining_quantity', '>', 0)->first();
+                        $promotion = $value->promotions()->where('status', 1)
+                                            ->where('remaining_quantity', '>', 0)
+                                            ->where(function ($query) use ($today) {
+                                                return $query->where('date_from', null)
+                                                    ->orWhere('date_from', '<=', $today);
+                                            })
+                                            ->where(function ($query) use ($today) {
+                                                return $query->where('date_to', null)
+                                                    ->orwhere('date_to', '>=', $today);
+                                            })
+                                            ->first();
                     @endphp
                     <div class="col mb-5">
                         <div class="card h-100">

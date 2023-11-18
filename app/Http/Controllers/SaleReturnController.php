@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleDetail;
@@ -31,6 +32,7 @@ class SaleReturnController extends Controller
         ]);
 
         $sale = Sale::find($data['sale_id']);
+        // $products = Product::get();
 
         return view('sale-return.create-second', compact('sale'));
     }
@@ -55,9 +57,12 @@ class SaleReturnController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $data = $request->validate([
             'return_sale_details' => 'array|required',
             'return_sale_details.*' => 'required|integer',
+            'product' => 'array|nullable',
+            'product.*' => 'nullable|integer',
             'description' => 'nullable|string',
         ]);
 
@@ -68,30 +73,82 @@ class SaleReturnController extends Controller
                 if ($quantity > 0) {
     
                     $saleDetail = SaleDetail::find($saleDetailId);
+                    $unitPrice = $saleDetail->total_amount / $saleDetail->quantity;
                     if (empty($saleDetail)) {
                         return redirect()->back()->with('error', 'Something went wrong!');
                     }
+
+                    $exchangePrdId = null;
         
-                    $totalReturnedAmount = $saleDetail->unit_price * $quantity;
-    
-                    $sale = Sale::find($saleDetail->sale_id);
-                    $sale->total_amount -= $totalReturnedAmount;
-                    $sale->save();
-    
-                    $product = Product::find($saleDetail->product_id);
-                    $product->quantity += $quantity;
-                    $product->save();
-    
-                    $saleDetail->total_amount -= $totalReturnedAmount;
-                    $saleDetail->quantity -= $quantity;
-                    $saleDetail->save();
+                    if (empty($data['product'][$saleDetailId])) {
+                        $totalReturnedAmount = $unitPrice * $quantity;
+
+                        $sale = Sale::find($saleDetail->sale_id);
+                        $sale->total_amount -= $totalReturnedAmount;
+                        $sale->save();
+
+                        $product = Product::find($saleDetail->product_id);
+                        $product->quantity += $quantity;
+                        $product->save();
+
+                        $saleDetail->total_amount -= $totalReturnedAmount;
+                        $saleDetail->quantity -= $quantity;
+                        $saleDetail->save();
+
+                        $payment = Payment::where('model_type', 'Sale')
+                                    ->where('reference_id', $sale->id)
+                                    ->first();
+
+                        $payment->total_amount -= $totalReturnedAmount;
+                        $payment->save();
+
+                    } else {
+                        $exchangePrd = Product::find($data['product'][$saleDetailId]);
+                        $exchangePrdId = $exchangePrd->id;
+
+                        if ($exchangePrdId != $saleDetail->product_id) {
+                            $exchangeAmount = $unitPrice * $quantity;
+
+                            $newSaleDetail = SaleDetail::where('sale_id', $saleDetail->sale_id)
+                                                        ->where('product_id', $data['product'][$saleDetailId])
+                                                        ->first();
+
+                            $product = Product::find($saleDetail->product_id);
+                            $product->quantity += $quantity;
+                            $product->save();
+
+                            $exchangePrd->quantity -= $quantity;
+                            $exchangePrd->save();
+
+                            $saleDetail->total_amount -= $exchangeAmount;
+                            $saleDetail->quantity -= $quantity;
+                            $saleDetail->save();
+
+                            if ($newSaleDetail) {
+                                $newSaleDetail->total_amount += $exchangeAmount;
+                                $newSaleDetail->quantity += $quantity;
+                                $newSaleDetail->save();
+                            } else {
+                                $newSaleDetail = SaleDetail::create([
+                                    'sale_id' => $saleDetail->sale_id,
+                                    'product_id' => $exchangePrdId,
+                                    'quantity' => $quantity,
+                                    'unit_price' => $unitPrice,
+                                    'total_amount' => $exchangeAmount,
+                                    'total_promoted_qty' => 0,
+                                    'total_promoted_amount' => 0,
+                                ]);
+                            }
+                        }
+                    }
         
                     $saleReturn = SaleReturn::create([
                         'sale_detail_id' => $saleDetail->id,
                         'product_id' => $saleDetail->product_id,
                         'returned_quantity' => $quantity,
-                        'total_returned_amount' => $totalReturnedAmount,
+                        'total_returned_amount' => $totalReturnedAmount ?? 0,
                         'description' => $request->description ?? null,
+                        'exchange_prd_id' => $exchangePrdId,
                     ]);
                 }
             }

@@ -203,8 +203,23 @@ class ProductController extends Controller
                     'status' => 'pending',
                 ]);
             }
+            
 
-            $cart->products()->attach($request->product_id, ['quantity' => $request->qty]);
+            // $cart->products()->attach($request->product_id, ['quantity' => $request->qty]);
+            $cartProduct = ProductCart::where('product_id', $request->product_id)
+                                ->where('cart_id', $cart->id)
+                                ->first();
+
+            if (!empty($cartProduct)) {
+                $cartProduct->quantity += $request->qty;
+                $cartProduct->save();
+            } else {
+                $cartProduct = ProductCart::create([
+                    'product_id' => $request->product_id,
+                    'cart_id' => $cart->id,
+                    'quantity' => $request->qty,
+                ]);
+            }
 
             $count = $cart->productCarts->sum('quantity');
 
